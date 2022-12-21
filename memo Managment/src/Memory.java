@@ -79,7 +79,34 @@ public class Memory {
                 System.out.println("\nDo you want to compact? 1.yes 2.no");
                 int compactChoice = input.nextInt();
                 if (compactChoice == 1){
-                    compact(notAddedProcesses,memoryPartitions,partitionsNumber);
+                    memoryPartitions = compact(notAddedProcesses,memoryPartitions,partitionsNumber);
+                    partitionsNumber++;
+                    for (int i = 0; i < notAddedProcesses.size(); i++) {
+                        Process currentProcess = notAddedProcesses.get(i);
+                        for (int j = 0; j < memoryPartitions.size(); j++) {
+                            if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
+                                int newPartitionSize;
+                                String newPartitionName;
+                                memoryPartitions.get(j).process = currentProcess;
+                                memoryPartitions.get(j).taken = true;
+                                newPartitionSize = memoryPartitions.get(j).size - currentProcess.size;
+                                newPartitionName = "Partition" + partitionsNumber++;
+                                memoryPartitions.get(j).size= currentProcess.size;
+                                MemoryPartition extraPartition = new MemoryPartition( newPartitionName, newPartitionSize);
+                                memoryPartitions.add(j+1 ,extraPartition);   // to add the new partition right after the current partition
+                                notAddedProcesses.remove(currentProcess);  // to remove newly added process form not added vector
+
+                                break;
+                            }
+                        }
+                    }
+                    for (MemoryPartition memoryPartition : memoryPartitions) {
+                        System.out.println(memoryPartition);
+                    }
+                    System.out.println();
+                    for (Process notAddedProcess : notAddedProcesses) {
+                        System.out.println(notAddedProcess.name + " cannot be added");
+                    }
                 }
             }
             else if (choice ==2){
@@ -136,7 +163,44 @@ public class Memory {
                 System.out.println("\nDo you want to compact? 1.yes 2.no");
                 int compactChoice = input.nextInt();
                 if (compactChoice == 1){
-                    compact(notAddedProcesses,memoryPartitions,partitionsNumber);
+                    memoryPartitions = compact(notAddedProcesses,memoryPartitions,partitionsNumber);
+                    partitionsNumber++;
+                    for (int i = 0; i < notAddedProcesses.size(); i++) {
+                        Process currentProcess = notAddedProcesses.get(i);
+                        int worstFitSize =-1, worstFitIdx=-1;
+
+                        for (int j = 0; j < memoryPartitions.size(); j++) {
+                            if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
+                                if(memoryPartitions.get(j).size -currentProcess.size > worstFitSize){
+                                    worstFitSize = memoryPartitions.get(j).size -currentProcess.size;
+                                    worstFitIdx = j;
+                                }
+                            }
+                        }
+                        if (worstFitIdx != -1){
+                            int newPartitionSize;
+                            String newPartitionName;
+                            memoryPartitions.get(worstFitIdx).process = currentProcess;
+                            memoryPartitions.get(worstFitIdx).taken = true;
+                            newPartitionSize = memoryPartitions.get(worstFitIdx).size - currentProcess.size;
+                            newPartitionName = "Partition" + partitionsNumber++;
+                            memoryPartitions.get(worstFitIdx).size= currentProcess.size;
+                            MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
+                            memoryPartitions.add(worstFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
+                            if (worstFitIdx == -1){
+                                notAddedProcesses.add(currentProcess);
+                            }
+                        }
+
+
+                    }
+                    for (MemoryPartition memoryPartition : memoryPartitions) {
+                        System.out.println(memoryPartition);
+                    }
+                    System.out.println();
+                    for (Process notAddedProcess : notAddedProcesses) {
+                        System.out.println(notAddedProcess.name + " cannot be added");
+                    }
                 }
             }
             else if(choice == 3){
@@ -153,11 +217,11 @@ public class Memory {
                 Vector<Process> notAddedProcesses = new Vector<Process>();
                 for (int i = 0; i < processesNumber; i++) {
                     Process currentProcess = processes.get(i);
-                    int bestFitSize =-1, bestFitIdx=-1;
+                    int bestFitSize =999999999, bestFitIdx=-1;
 
                     for (int j = 0; j < memoryPartitions.size(); j++) {
                         if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
-                            if(memoryPartitions.get(j).size -currentProcess.size < bestFitSize){
+                            if((memoryPartitions.get(j).size -currentProcess.size) < bestFitSize){
                                 bestFitSize = memoryPartitions.get(j).size -currentProcess.size;
                                 bestFitIdx = j;
                             }
@@ -167,19 +231,18 @@ public class Memory {
                         notAddedProcesses.add(currentProcess);
                     }
                     else {
-                        int newPartitionSize;
-                        String newPartitionName;
+                        if(memoryPartitions.get(bestFitIdx).size - currentProcess.size >0){
+                            int newPartitionSize;
+                            String newPartitionName;
+                            newPartitionSize = memoryPartitions.get(bestFitIdx).size - currentProcess.size;
+                            newPartitionName = "Partition" + partitionsNumber++;
+                            memoryPartitions.get(bestFitIdx).size= currentProcess.size;
+                            MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
+                            memoryPartitions.add(bestFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
+                        }
                         memoryPartitions.get(bestFitIdx).process = currentProcess;
                         memoryPartitions.get(bestFitIdx).taken = true;
-                        newPartitionSize = memoryPartitions.get(bestFitIdx).size - currentProcess.size;
-                        newPartitionName = "Partition" + partitionsNumber++;
-                        memoryPartitions.get(bestFitIdx).size= currentProcess.size;
-                        MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
-                        memoryPartitions.add(bestFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
                     }
-
-
-
                 }
                 for (MemoryPartition memoryPartition : memoryPartitions) {
                     System.out.println(memoryPartition);
@@ -192,7 +255,41 @@ public class Memory {
                 System.out.println("\nDo you want to compact? 1.yes 2.no");
                 int compactChoice = input.nextInt();
                 if (compactChoice == 1){
-                    compact(notAddedProcesses,memoryPartitions,partitionsNumber);
+                    memoryPartitions = compact(notAddedProcesses,memoryPartitions,partitionsNumber);
+                    partitionsNumber++;
+                    for (int i = 0; i < notAddedProcesses.size(); i++) {
+                        Process currentProcess = notAddedProcesses.get(i);
+                        int bestFitSize =999999999, bestFitIdx=-1;
+
+                        for (int j = 0; j < memoryPartitions.size(); j++) {
+                            if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
+                                if((memoryPartitions.get(j).size -currentProcess.size) < bestFitSize){
+                                    bestFitSize = memoryPartitions.get(j).size -currentProcess.size;
+                                    bestFitIdx = j;
+                                }
+                            }
+                        }
+                        if(bestFitIdx != -1) {
+                            if(memoryPartitions.get(bestFitIdx).size - currentProcess.size >0){
+                                int newPartitionSize;
+                                String newPartitionName;
+                                newPartitionSize = memoryPartitions.get(bestFitIdx).size - currentProcess.size;
+                                newPartitionName = "Partition" + partitionsNumber++;
+                                memoryPartitions.get(bestFitIdx).size= currentProcess.size;
+                                MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
+                                memoryPartitions.add(bestFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
+                            }
+                            memoryPartitions.get(bestFitIdx).process = currentProcess;
+                            memoryPartitions.get(bestFitIdx).taken = true;
+                        }
+                    }
+                    for (MemoryPartition memoryPartition : memoryPartitions) {
+                        System.out.println(memoryPartition);
+                    }
+                    System.out.println();
+                    for (Process notAddedProcess : notAddedProcesses) {
+                        System.out.println(notAddedProcess.name + " cannot be added");
+                    }
                 }
             }
             else
@@ -201,7 +298,7 @@ public class Memory {
         }
 
     }
-    public static void compact (Vector<Process> notAddedProcesses , Vector<MemoryPartition> memoryPartitions, int partitionsNumber){
+    public static Vector<MemoryPartition> compact (Vector<Process> notAddedProcesses , Vector<MemoryPartition> memoryPartitions, int partitionsNumber){
         MemoryPartition newPartition = new MemoryPartition( "null", 0); // null values for initialization
         for (int i = 0; i < memoryPartitions.size(); i++) {
             if(!memoryPartitions.get(i).taken){
@@ -213,32 +310,8 @@ public class Memory {
         }
         newPartition.name = "Partition" + partitionsNumber++;
         memoryPartitions.add(newPartition);     // to add the new compact partition
-        for (int i = 0; i < notAddedProcesses.size(); i++) {
-            Process currentProcess = notAddedProcesses.get(i);
-            for (int j = 0; j < memoryPartitions.size(); j++) {
-                if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
-                    int newPartitionSize;
-                    String newPartitionName;
-                    memoryPartitions.get(j).process = currentProcess;
-                    memoryPartitions.get(j).taken = true;
-                    newPartitionSize = memoryPartitions.get(j).size - currentProcess.size;
-                    newPartitionName = "Partition" + partitionsNumber++;
-                    memoryPartitions.get(j).size= currentProcess.size;
-                    MemoryPartition extraPartition = new MemoryPartition( newPartitionName, newPartitionSize);
-                    memoryPartitions.add(j+1 ,extraPartition);   // to add the new partition right after the current partition
-                    notAddedProcesses.remove(currentProcess);  // to remove newly added process form not added vector
+        return memoryPartitions;
 
-                    break;
-                }
-            }
-        }
-        for (MemoryPartition memoryPartition : memoryPartitions) {
-            System.out.println(memoryPartition);
-        }
-        System.out.println();
-        for (Process notAddedProcess : notAddedProcesses) {
-            System.out.println(notAddedProcess.name + " cannot be added");
-        }
     }
 }
 
