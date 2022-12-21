@@ -9,8 +9,8 @@ public class Memory {
         String name;
         Process process;
         MemoryPartition partition;
-        Vector<Process> generalprocesses = new Vector<Process>();
-        Vector<MemoryPartition> generalmemoryPartitions = new Vector<MemoryPartition>();
+        Vector<Process> generalprocesses = new Vector<>();
+        Vector<MemoryPartition> generalmemoryPartitions = new Vector<>();
 
         System.out.print("Enter number of partitions: ");
         generalpartitionsNumber = input.nextInt();
@@ -36,14 +36,17 @@ public class Memory {
                 Vector<Process> processes = new Vector<>();   // to copy the vectors in scope of fitting algorithm
                 Vector<MemoryPartition> memoryPartitions = new Vector<>();
                 int partitionsNumber = generalpartitionsNumber;
-                for (int i = 0; i < generalprocesses.size(); i++) {
-                    processes.add(generalprocesses.get(i));
+                for (Process generalprocess : generalprocesses) {
+                    processes.add(generalprocess);
                 }
-                for (int i = 0; i < generalmemoryPartitions.size(); i++) {
-                    memoryPartitions.add(generalmemoryPartitions.get(i));
+                for (MemoryPartition generalmemoryPartition : generalmemoryPartitions) {
+                    MemoryPartition tmpPartition  = new MemoryPartition("null",0);
+                    tmpPartition.name = generalmemoryPartition.name;
+                    tmpPartition.size = generalmemoryPartition.size;
+                    memoryPartitions.add(tmpPartition);
                 }
 
-                Vector<Process> notAddedProcesses = new Vector<Process>();
+                Vector<Process> notAddedProcesses = new Vector<>();
                 for (int i = 0; i < processesNumber; i++) {
                     Process currentProcess = processes.get(i);
                     boolean state = true;
@@ -113,13 +116,16 @@ public class Memory {
                 Vector<Process> processes = new Vector<>();   // to copy the vectors in scope of fitting algorithm
                 Vector<MemoryPartition> memoryPartitions = new Vector<>();
                 int partitionsNumber = generalpartitionsNumber;
-                for (int i = 0; i < generalprocesses.size(); i++) {
-                    processes.add(generalprocesses.get(i));
+                for (Process generalprocess : generalprocesses) {
+                    processes.add(generalprocess);
                 }
-                for (int i = 0; i < generalmemoryPartitions.size(); i++) {
-                    memoryPartitions.add(generalmemoryPartitions.get(i));
+                for (MemoryPartition generalmemoryPartition : generalmemoryPartitions) {
+                    MemoryPartition tmpPartition  = new MemoryPartition("null",0);
+                    tmpPartition.name = generalmemoryPartition.name;
+                    tmpPartition.size = generalmemoryPartition.size;
+                    memoryPartitions.add(tmpPartition);
                 }
-                Vector<Process> notAddedProcesses = new Vector<Process>();
+                Vector<Process> notAddedProcesses = new Vector<>();
                 for (int i = 0; i < processesNumber; i++) {
                     Process currentProcess = processes.get(i);
                     int worstFitSize =-1, worstFitIdx=-1;
@@ -145,9 +151,7 @@ public class Memory {
                         memoryPartitions.get(worstFitIdx).size= currentProcess.size;
                         MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
                         memoryPartitions.add(worstFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
-                        if (worstFitIdx == -1){
-                            notAddedProcesses.add(currentProcess);
-                        }
+
                     }
 
 
@@ -165,34 +169,29 @@ public class Memory {
                 if (compactChoice == 1){
                     memoryPartitions = compact(notAddedProcesses,memoryPartitions,partitionsNumber);
                     partitionsNumber++;
-                    for (int i = 0; i < notAddedProcesses.size(); i++) {
-                        Process currentProcess = notAddedProcesses.get(i);
-                        int worstFitSize =-1, worstFitIdx=-1;
+                    for (Process currentProcess : notAddedProcesses) {
+                        int worstFitSize = -1, worstFitIdx = -1;
 
                         for (int j = 0; j < memoryPartitions.size(); j++) {
-                            if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
-                                if(memoryPartitions.get(j).size -currentProcess.size > worstFitSize){
-                                    worstFitSize = memoryPartitions.get(j).size -currentProcess.size;
+                            if (currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken) {
+                                if (memoryPartitions.get(j).size - currentProcess.size > worstFitSize) {
+                                    worstFitSize = memoryPartitions.get(j).size - currentProcess.size;
                                     worstFitIdx = j;
                                 }
                             }
                         }
-                        if (worstFitIdx != -1){
+                        if (worstFitIdx != -1) {
                             int newPartitionSize;
                             String newPartitionName;
                             memoryPartitions.get(worstFitIdx).process = currentProcess;
                             memoryPartitions.get(worstFitIdx).taken = true;
                             newPartitionSize = memoryPartitions.get(worstFitIdx).size - currentProcess.size;
                             newPartitionName = "Partition" + partitionsNumber++;
-                            memoryPartitions.get(worstFitIdx).size= currentProcess.size;
-                            MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
-                            memoryPartitions.add(worstFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
-                            if (worstFitIdx == -1){
-                                notAddedProcesses.add(currentProcess);
-                            }
+                            memoryPartitions.get(worstFitIdx).size = currentProcess.size;
+                            MemoryPartition newPartition = new MemoryPartition(newPartitionName, newPartitionSize);
+                            memoryPartitions.add(worstFitIdx + 1, newPartition);   // to add the new partition right after the current partition
+
                         }
-
-
                     }
                     for (MemoryPartition memoryPartition : memoryPartitions) {
                         System.out.println(memoryPartition);
@@ -204,14 +203,17 @@ public class Memory {
                 }
             }
             else if(choice == 3){
-                Vector<Process> processes = new Vector<>();   // to copy the vectors in scope of fitting algorithm
+                Vector<Process> processes = new Vector<Process>();   // to copy the vectors in scope of fitting algorithm
                 Vector<MemoryPartition> memoryPartitions = new Vector<>();
                 int partitionsNumber = generalpartitionsNumber;
-                for (int i = 0; i < generalprocesses.size(); i++) {
-                    processes.add(generalprocesses.get(i));
+                for (Process generalprocess : generalprocesses) {
+                    processes.add(generalprocess);
                 }
-                for (int i = 0; i < generalmemoryPartitions.size(); i++) {
-                    memoryPartitions.add(generalmemoryPartitions.get(i));
+                for (MemoryPartition generalmemoryPartition : generalmemoryPartitions) {
+                    MemoryPartition tmpPartition  = new MemoryPartition("null",0);
+                    tmpPartition.name = generalmemoryPartition.name;
+                    tmpPartition.size = generalmemoryPartition.size;
+                    memoryPartitions.add(tmpPartition);
                 }
 
                 Vector<Process> notAddedProcesses = new Vector<Process>();
@@ -257,27 +259,26 @@ public class Memory {
                 if (compactChoice == 1){
                     memoryPartitions = compact(notAddedProcesses,memoryPartitions,partitionsNumber);
                     partitionsNumber++;
-                    for (int i = 0; i < notAddedProcesses.size(); i++) {
-                        Process currentProcess = notAddedProcesses.get(i);
-                        int bestFitSize =999999999, bestFitIdx=-1;
+                    for (Process currentProcess : notAddedProcesses) {
+                        int bestFitSize = 999999999, bestFitIdx = -1;
 
                         for (int j = 0; j < memoryPartitions.size(); j++) {
-                            if(currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken){
-                                if((memoryPartitions.get(j).size -currentProcess.size) < bestFitSize){
-                                    bestFitSize = memoryPartitions.get(j).size -currentProcess.size;
+                            if (currentProcess.size <= memoryPartitions.get(j).size && !memoryPartitions.get(j).taken) {
+                                if ((memoryPartitions.get(j).size - currentProcess.size) < bestFitSize) {
+                                    bestFitSize = memoryPartitions.get(j).size - currentProcess.size;
                                     bestFitIdx = j;
                                 }
                             }
                         }
-                        if(bestFitIdx != -1) {
-                            if(memoryPartitions.get(bestFitIdx).size - currentProcess.size >0){
+                        if (bestFitIdx != -1) {
+                            if (memoryPartitions.get(bestFitIdx).size - currentProcess.size > 0) {
                                 int newPartitionSize;
                                 String newPartitionName;
                                 newPartitionSize = memoryPartitions.get(bestFitIdx).size - currentProcess.size;
                                 newPartitionName = "Partition" + partitionsNumber++;
-                                memoryPartitions.get(bestFitIdx).size= currentProcess.size;
-                                MemoryPartition newPartition = new MemoryPartition( newPartitionName, newPartitionSize);
-                                memoryPartitions.add(bestFitIdx+1 ,newPartition);   // to add the new partition right after the current partition
+                                memoryPartitions.get(bestFitIdx).size = currentProcess.size;
+                                MemoryPartition newPartition = new MemoryPartition(newPartitionName, newPartitionSize);
+                                memoryPartitions.add(bestFitIdx + 1, newPartition);   // to add the new partition right after the current partition
                             }
                             memoryPartitions.get(bestFitIdx).process = currentProcess;
                             memoryPartitions.get(bestFitIdx).taken = true;
@@ -291,10 +292,8 @@ public class Memory {
                         System.out.println(notAddedProcess.name + " cannot be added");
                     }
                 }
-            }
-            else
-                System.out.println("ERROR : please try again ");
 
+            }
         }
 
     }
