@@ -1,0 +1,4 @@
+Hi , this project is supposed to implement the algorithms by which the memory of the operating system is managed , 
+it was an assignment in the operating system course last semester , it was meant to implement the algorithms effectively and properly
+(to show how memory partitions are filled with different processes and how the OS deals with external fragments) 
+so OOP principles were not implemented properly in this project
